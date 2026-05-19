@@ -16,7 +16,10 @@ This tool picks a study topic from a CSV file based on priority parameters.
 ## Problems
 
 - How the user is going to mark a topic as studied?
-- Maybe I should give unique ID's to the topics
+
+    Via CLI arguments. (pick, done...)
+
+- Should I need unique ID's to the topics?
 
 ## Future Enhancements
 
