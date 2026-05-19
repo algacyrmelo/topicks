@@ -12,29 +12,42 @@ SUBJECT_WEIGHTS = {
 
 def pick_topic(candidates: list[dict[str, str]]) -> dict[str, str]:
     random.seed(42)
-    topic: dict[str, str] = random.choices(candidates, k=1)[0]
+    topic: dict[str, str] = random.choice(candidates)
     return topic
 
 
 def update_last_studied(topic: dict[str, str]) -> dict[str, str]:
-    updated = topic.copy()
+    updated_topic = topic.copy()
     now = datetime.now()
-    updated["last_studied"] = now.strftime("%Y-%m-%d")
-    return updated
+    updated_topic["last_studied"] = now.strftime("%Y-%m-%d")
+    return updated_topic
 
 
 def main():
-    #rows = []
+    rows: list[dict[str, str]] = []
     with open("topics.csv", mode="r", encoding="utf-8", newline="") as csvfile:
         reader = csv.DictReader(csvfile)
+        for row in reader:
+            rows.append(row)
 
-        candidates = list(filter(lambda row: row["last_studied"] == "", reader))
-        # How can I handle the reader after being consumed?
+    candidates = list(filter(lambda row: row["last_studied"] == "", rows))
+    topic = pick_topic(candidates)
 
-        topic = pick_topic(candidates)
-        topic = update_last_studied(topic)
+    updated_topic = update_last_studied(topic)
+    for i in range(len(rows)):
+        if rows[i] == topic:
+            rows[i] = updated_topic
 
-        print(topic)
+    fieldnames = reader.fieldnames
+    if fieldnames is None:
+        raise Exception("CSV file has no headers")
+
+    with open("topics.csv", mode="w", encoding="utf-8", newline="") as csvfile:
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(rows)
+
+    print(updated_topic)
 
 
 main()
