@@ -8,10 +8,13 @@ This tool picks a study topic from a CSV file based on priority parameters.
 - Pick a topic suggestion for the user to study
 - Update and save the progress
 
+## Usage
+`python3 main.py topics.csv [--done]`
+
 ## TODO
 
-- Mark a topic as *picked*, enabling the user to mark as *done*
-- Update the review cycle by the time a topic is done
+- [x]Mark a topic as *picked*, enabling the user to mark as *done*
+- [ ]Update the review cycle by the time a topic is done
 
 ## Problems
 
@@ -19,7 +22,7 @@ This tool picks a study topic from a CSV file based on priority parameters.
 
     Via CLI arguments. (pick, done...)
 
-- Should I need unique ID's to the topics?
+- Should I need unique ID's to the subjects or topics?
 
 ## Future Enhancements
 
