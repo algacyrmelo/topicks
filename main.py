@@ -1,7 +1,6 @@
 import csv
 import random
 import sys
-
 from datetime import datetime
 
 
@@ -32,30 +31,28 @@ def main():
     with open(filename, mode="r", encoding="utf-8", newline="") as csvfile:
         reader = csv.DictReader(csvfile)
 
-        current_topic = None
-        for row in reader:
+        curr_idx, curr_topic = -1, None
+        for i, row in enumerate(reader):
             if row["current"] == "*":
-                current_topic = row
+                curr_idx, curr_topic = i, row
             topics.append(row)
 
     done = "--done" in sys.argv
 
-    if current_topic and not done:
-        print(current_topic)
+    if curr_topic and not done:
+        print(curr_topic)
         sys.exit(0)
 
-    if current_topic and done:
-        for i in range(len(topics)):
-            if topics[i] == current_topic:
-                topics[i] = update_topic_done(current_topic)
+    if curr_topic and curr_idx >= 0 and done:
+        topics[curr_idx] = update_topic_done(curr_topic)
 
-    if not current_topic:
-        current_topic = pick_next_topic(topics)
+    if not curr_topic and curr_idx == -1:
+        curr_topic = pick_next_topic(topics)
         for i in range(len(topics)):
-            if topics[i] == current_topic:
+            if topics[i] == curr_topic:
                 topics[i]["current"] = "*"
 
-    print(current_topic)
+    print(curr_topic)
 
     fieldnames = reader.fieldnames
     if fieldnames is None:
