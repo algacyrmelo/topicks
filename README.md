@@ -22,7 +22,7 @@ This tool picks a study topic from a CSV file based on priority parameters.
 
     Via CLI arguments. (pick, done...)
 
-- Should I need unique ID's to the subjects or topics?
+- Do I need unique ID's to the subjects or topics?
 
 ## Future Enhancements
 
