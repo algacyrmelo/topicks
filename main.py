@@ -1,22 +1,44 @@
 import csv
-import random
+import datetime as dt
 import sys
-from datetime import datetime
 
-# TODO: Add this mapping to the picking algorithm
-# review cycle -> interval
-# 1 -> 3 days, 2 -> 7 days, 3 -> 15 days, 4 -> 30 days
+
+def get_topic_score(topic: dict[str, str]) -> float:
+    # there's 4 review cycles which determines
+    # after how many days a topic should be revisited
+    cycle_days = {"1": 3, "2": 7, "3": 15, "4": 30}
+
+    last_studied_str = topic["last_studied"]
+    last_studied = dt.datetime.strptime(last_studied_str, "%Y-%m-%d")
+
+    review_cycle = topic["review_cycle"]
+    due_date = last_studied + dt.timedelta(days=cycle_days[review_cycle])
+
+    now = dt.datetime.now()
+    time_since_last_studied = now - last_studied
+
+    delay = now - due_date
+
+    return (time_since_last_studied.days / cycle_days[review_cycle]) + delay.days
+
 
 def pick_next_topic(topics: list[dict[str, str]]) -> dict[str, str]:
-    random.seed()
-    topic = random.choice(topics)
-    return topic
+    curr_pick = {}
+    highest_score = -float("inf")
+
+    for topic in topics:
+        curr_score = get_topic_score(topic)
+        if curr_score > highest_score:
+            curr_pick = topic
+            highest_score = curr_score
+
+    return curr_pick
 
 
 def update_topic_done(topic: dict[str, str]) -> dict[str, str]:
     updated_topic = topic.copy()
 
-    now = datetime.now()
+    now = dt.date.today()
     updated_topic["last_studied"] = now.strftime("%Y-%m-%d")
 
     updated_topic["current"] = ""
@@ -64,8 +86,6 @@ def main():
     # list topics
     for topic in topics:
         print(f"{topic['name']}{topic['current']}")
-
-    #print("DEBUG", type(int(topics[0]["review_cycle"])))
 
     fieldnames = reader.fieldnames
     if fieldnames is None:
