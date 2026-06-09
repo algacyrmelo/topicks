@@ -7,8 +7,10 @@ Tool that saves your time deciding what to study next.
 
 ## Usage
 
-`python3 main.py topics.csv # pick a topic`
-`python3 main.py topics.csv [--done] # mark it as done`
+```bash
+python3 main.py topics.csv # pick a topic
+python3 main.py topics.csv [--done] # mark it as done
+```
 
 ## TODO
 
