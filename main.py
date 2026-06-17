@@ -4,14 +4,20 @@ import sys
 
 
 def get_topic_score(topic: dict[str, str]) -> float:
-    # there's 4 review cycles which determines
-    # after how many days a topic should be revisited
+    # Review cycles goes from 1 to 4 and it's current value
+    # affects the likelihood for a topic to be picked
     cycle_days = {"1": 3, "2": 7, "3": 15, "4": 30}
 
     last_studied_str = topic["last_studied"]
+    # If topic was never studied, give it priority by
+    # returning an arbitrary big score
+    if last_studied_str == "":
+        return 100.0
+
     last_studied = dt.datetime.strptime(last_studied_str, "%Y-%m-%d")
 
     review_cycle = topic["review_cycle"]
+
     due_date = last_studied + dt.timedelta(days=cycle_days[review_cycle])
 
     now = dt.datetime.now()
@@ -19,7 +25,8 @@ def get_topic_score(topic: dict[str, str]) -> float:
 
     delay = now - due_date
 
-    return (time_since_last_studied.days / cycle_days[review_cycle]) + delay.days
+    score = (time_since_last_studied.days / cycle_days[review_cycle]) + delay.days
+    return score
 
 
 def pick_next_topic(topics: list[dict[str, str]]) -> dict[str, str]:
@@ -72,18 +79,15 @@ def main():
 
     done: bool = "--done" in sys.argv
 
-    # topic is done, update it
     if curr_topic and curr_i >= 0 and done:
         topics[curr_i] = update_topic_done(curr_topic)
 
-    # no topic selected, pick one
     if not curr_topic and curr_i == -1:
         curr_topic = pick_next_topic(topics)
         for i in range(len(topics)):
             if topics[i] == curr_topic:
                 topics[i]["current"] = "*"
 
-    # list topics
     for topic in topics:
         print(f"{topic['name']}{topic['current']}")
 
@@ -91,8 +95,7 @@ def main():
     if fieldnames is None:
         raise Exception("CSV file has no headers")
 
-    # write changes back to csv file
-    with open("topics.csv", mode="w", encoding="utf-8", newline="") as csvfile:
+    with open(filename, mode="w", encoding="utf-8", newline="") as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
         writer.writerows(topics)
